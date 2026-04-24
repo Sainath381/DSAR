@@ -1,0 +1,413 @@
+{
+  "info": {
+    "_postman_id": "dsar-portal-v1",
+    "name": "DSAR Portal",
+    "description": "Data Subject Access Request portal — complete API collection. Set `auth_email`/`auth_password` via the collection variables or individual request Authorization tabs. Seeded credentials: admin@demo.io/admin123, customer@demo.io/customer123.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "adminEmail", "value": "admin@demo.io", "type": "string" },
+    { "key": "adminPassword", "value": "admin123", "type": "string" },
+    { "key": "customerEmail", "value": "customer@demo.io", "type": "string" },
+    { "key": "customerPassword", "value": "customer123", "type": "string" },
+    { "key": "requestId", "value": "", "type": "string", "description": "Populated by the Customer → Submit ACCESS request via a test script" }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      { "key": "username", "value": "{{adminEmail}}", "type": "string" },
+      { "key": "password", "value": "{{adminPassword}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "noauth" },
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Whoami (admin)",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{adminEmail}}" },
+                { "key": "password", "value": "{{adminPassword}}" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/whoami", "host": ["{{baseUrl}}"], "path": ["api", "auth", "whoami"] }
+          }
+        },
+        {
+          "name": "Whoami (customer)",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{customerEmail}}" },
+                { "key": "password", "value": "{{customerPassword}}" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/whoami", "host": ["{{baseUrl}}"], "path": ["api", "auth", "whoami"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customer",
+      "item": [
+        {
+          "name": "Submit ACCESS request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body && body.id) {",
+                  "  pm.collectionVariables.set('requestId', body.id);",
+                  "  console.log('Saved requestId = ' + body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{customerEmail}}" },
+                { "key": "password", "value": "{{customerPassword}}" }
+              ]
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"ACCESS\",\n  \"note\": \"Please send me all data held about me.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/customer/requests", "host": ["{{baseUrl}}"], "path": ["api", "customer", "requests"] }
+          }
+        },
+        {
+          "name": "Submit CORRECT request",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{customerEmail}}" },
+                { "key": "password", "value": "{{customerPassword}}" }
+              ]
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"CORRECT\",\n  \"payload\": {\n    \"field\": \"fullName\",\n    \"newValue\": \"Priya P. Customer\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/customer/requests", "host": ["{{baseUrl}}"], "path": ["api", "customer", "requests"] }
+          }
+        },
+        {
+          "name": "Submit DELETE request",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{customerEmail}}" },
+                { "key": "password", "value": "{{customerPassword}}" }
+              ]
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"DELETE\",\n  \"payload\": { \"confirmed\": true }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/customer/requests", "host": ["{{baseUrl}}"], "path": ["api", "customer", "requests"] }
+          }
+        },
+        {
+          "name": "List my requests",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{customerEmail}}" },
+                { "key": "password", "value": "{{customerPassword}}" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/customer/requests", "host": ["{{baseUrl}}"], "path": ["api", "customer", "requests"] }
+          }
+        },
+        {
+          "name": "Get my request",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{customerEmail}}" },
+                { "key": "password", "value": "{{customerPassword}}" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/customer/requests/{{requestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customer", "requests", "{{requestId}}"]
+            }
+          }
+        },
+        {
+          "name": "Download my ACCESS export",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{customerEmail}}" },
+                { "key": "password", "value": "{{customerPassword}}" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/customer/requests/{{requestId}}/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customer", "requests", "{{requestId}}", "export"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Queue (all)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/admin/requests", "host": ["{{baseUrl}}"], "path": ["api", "admin", "requests"] }
+          }
+        },
+        {
+          "name": "Queue (filter: SUBMITTED)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/requests?status=SUBMITTED",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "requests"],
+              "query": [{ "key": "status", "value": "SUBMITTED" }]
+            }
+          }
+        },
+        {
+          "name": "Get request (writes RECORD_ACCESSED audit)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/requests/{{requestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "requests", "{{requestId}}"]
+            }
+          }
+        },
+        {
+          "name": "Transition → IN_REVIEW",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetStatus\": \"IN_REVIEW\",\n  \"note\": \"triaging\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/requests/{{requestId}}/transition",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "requests", "{{requestId}}", "transition"]
+            }
+          }
+        },
+        {
+          "name": "Transition → APPROVED",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetStatus\": \"APPROVED\",\n  \"note\": \"identity verified\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/requests/{{requestId}}/transition",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "requests", "{{requestId}}", "transition"]
+            }
+          }
+        },
+        {
+          "name": "Transition → REJECTED (needs note)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetStatus\": \"REJECTED\",\n  \"note\": \"duplicate request\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/requests/{{requestId}}/transition",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "requests", "{{requestId}}", "transition"]
+            }
+          }
+        },
+        {
+          "name": "Complete (execute action)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/requests/{{requestId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "requests", "{{requestId}}", "complete"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Audit",
+      "item": [
+        {
+          "name": "Audit log (all)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/admin/audit", "host": ["{{baseUrl}}"], "path": ["api", "admin", "audit"] }
+          }
+        },
+        {
+          "name": "Audit log — filter by action STATUS_CHANGED",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/audit?action=STATUS_CHANGED",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "audit"],
+              "query": [{ "key": "action", "value": "STATUS_CHANGED" }]
+            }
+          }
+        },
+        {
+          "name": "Audit log — filter by one request",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/audit?entityType=DsarRequest&entityId={{requestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "audit"],
+              "query": [
+                { "key": "entityType", "value": "DsarRequest" },
+                { "key": "entityId", "value": "{{requestId}}" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Negative tests (expected to fail)",
+      "item": [
+        {
+          "name": "Customer hits admin endpoint (403)",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{customerEmail}}" },
+                { "key": "password", "value": "{{customerPassword}}" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/admin/requests", "host": ["{{baseUrl}}"], "path": ["api", "admin", "requests"] }
+          }
+        },
+        {
+          "name": "Unauthed request (401)",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "noauth" },
+            "url": { "raw": "{{baseUrl}}/api/auth/whoami", "host": ["{{baseUrl}}"], "path": ["api", "auth", "whoami"] }
+          }
+        },
+        {
+          "name": "DELETE without confirmed (400)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{customerEmail}}" },
+                { "key": "password", "value": "{{customerPassword}}" }
+              ]
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"type\": \"DELETE\" }"
+            },
+            "url": { "raw": "{{baseUrl}}/api/customer/requests", "host": ["{{baseUrl}}"], "path": ["api", "customer", "requests"] }
+          }
+        },
+        {
+          "name": "CORRECT email (400)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{customerEmail}}" },
+                { "key": "password", "value": "{{customerPassword}}" }
+              ]
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"CORRECT\",\n  \"payload\": { \"field\": \"email\", \"newValue\": \"hack@x.io\" }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/customer/requests", "host": ["{{baseUrl}}"], "path": ["api", "customer", "requests"] }
+          }
+        },
+        {
+          "name": "Illegal transition SUBMITTED → APPROVED (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"targetStatus\": \"APPROVED\" }"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/requests/{{requestId}}/transition",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "requests", "{{requestId}}", "transition"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

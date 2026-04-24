@@ -1,0 +1,36 @@
+# IDEs
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Java / Maven
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+**/*.class
+**/hs_err_pid*.log
+**/replay_pid*.log
+
+# H2
+backend/*.mv.db
+backend/*.trace.db
+
+# Node / Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/*.log
+
+# OS / misc
+*.log
+*.swp
+*.tmp
+
+# Env
+.env
+.env.local
+
+/DEMO-CHEATSHEET.md
+/SCREENSHOTS.md
+

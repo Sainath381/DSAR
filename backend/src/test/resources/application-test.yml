@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:dsardb-test;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  h2:
+    console:
+      enabled: false
+
+server:
+  port: 0
+
+logging:
+  level:
+    com.dsar.portal: WARN
+    org.springframework.security: WARN
+    org.hibernate: WARN
+
+app:
+  sla-days: 30
+  cors-origins: http://localhost:4200
