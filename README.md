@@ -386,4 +386,4 @@ A non-exhaustive list of items explicitly scoped **out** for the POC:
 
 ---
 
-*Built by Abhijith Krishna Ravuri for a technical assessment. The goal is to demonstrate defensible engineering judgment under time constraints.*
+*Built by Sainath Bobbilla for a technical assessment. The goal is to demonstrate defensible engineering judgment under time constraints.*
